@@ -22,7 +22,7 @@ class proloState:
         self.k = 2
         self.playerJustMoved = 2 # At the root pretend the player just moved is p2 - p1 has the first move
         coord = []
-        self.origin = [[0,0,0,0]]*2 #iLig, iCol, type, money on
+        self.origin = [[0,0,0,0] for i in range(2)] #iLig, iCol, type, money on
         self.score = [0,0]
         for i in range(2):
             self.origin[i] = map(int,themap.split('\n')[i].split(' '))+[0,0]
