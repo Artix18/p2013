@@ -1,0 +1,12 @@
+rules: libprologin2013.so
+map: ./map1.map
+verbose: 0
+clients:
+  - ./champion.so
+  - ./champion.so
+names:
+  - Blue ones
+  - Red ones
+spectators:
+  - /home/cosmo/Documents/prologin/stechec2/games/prologin2013/dumper/chamion.so
+  - /home/cosmo/Documents/prologin/stechec2/games/prologin2013/gui/champion.so
