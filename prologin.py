@@ -14,7 +14,9 @@ import numpy as np
 from graphviz import Digraph
 from sets import Set
 from collections import OrderedDict
+import resource, sys
 
+LMAXID=1 #attention à cette variable, mais pour l'instant on la met dans un endroit useless. Source de bugs
  
 class proloState:
     def __init__(self, monX, monY, advX, advY, themap):
@@ -22,26 +24,27 @@ class proloState:
         self.k = 2
         self.playerJustMoved = 2 # At the root pretend the player just moved is p2 - p1 has the first move
         coord = []
-        self.origin = [[0,0,0,0] for i in range(2)] #iLig, iCol, type, money on
+        self.origin = [[0,0] for i in range(2)] #iLig, iCol, type, money on
         self.score = [0,0]
-        self.origin[0] = [monY,monX]+[0,0]
-        self.origin[1] = [advY,advX]+[0,0]
+        self.origin[0] = position(x=monX,y=monY)
+        self.origin[1] = position(x=advX,y=advY)
         l_coords = []
         self.themap = copy.deepcopy(themap)
         for (i,row) in enumerate(themap):
             for (j,c) in enumerate(row):
+                self.or_sur_ile[i][j] = info_ile_or(position(x=j,y=i))
                 if c != '~':
-                    t = 0 if c == 'o' else 1
-                    l_coords.append([j,i,t,0])
+                    #t = 0 if c == 'o' else 1
+                    l_coords.append(position(x=j,y=i))
        
         self.n_islands = l_coords[:]
         self.p_islands = [[],[]]
        
         for i in range(2):
             self.n_islands.remove(self.origin[i])
-            self.p_islands[i].append(self.origin[i][:])
+            self.p_islands[i].append(self.origin[i])
            
-            self.p_islands[i][-1][-1] = OR_INITIAL
+            #self.p_islands[i][-1][-1] = OR_INITIAL pas nécessaire normalement grâce à self.or_sur_ile[i][j] plus haut
         self.p_boats = [[],[]]
        
     def Clone(self):
@@ -49,10 +52,11 @@ class proloState:
         """
         return copy.deepcopy(self)
  
-    def DoMove(self, move):
+    def DoMove(self, move, joueVraiment=False):
         """ Update a state by carrying out the given move.
             Must update playerJustMoved.
         """
+        global LMAXID
         self.playerJustMoved = 3 - self.playerJustMoved
         self.k +=1
         global CARAVELLE_DEPLACEMENT
@@ -64,57 +68,65 @@ class proloState:
             imini = 0
             for (j,isl) in enumerate(self.n_islands):
                 if self.manDist(b,isl) <= dmini:
-                    dmini = self.manDist(b,isl)
+                    dmini = self.manDist(b.pos,isl)
                     imini = j
             if dmini != 1000:
                 themin=1000
-                cmin = [0,0]
-                for x in range(0,32):
-                    for y in range(0,32):
-                        if self.manDist(b, [x,y]) <= CARAVELLE_DEPLACEMENT:
-                            if self.manDist([x,y],self.n_islands[imini]) <= themin:
-                                themin = self.manDist([x,y],self.n_islands[imini])
-                                cmin = [x,y]
+                cmin = position(x=0,y=0)
+                for x in range(1,33):
+                    for y in range(1,33):
+                        if self.manDist(b.pos, position(x=x, y=y)) <= CARAVELLE_DEPLACEMENT:
+                            if self.manDist(position(x=x,y=y),self.n_islands[imini]) <= themin:
+                                themin = self.manDist(position(x=x,y=y),self.n_islands[imini])
+                                cmin = position(x=x,y=y)
                 if themin == 0:
                     toErase = []
                     for isl in self.n_islands:
-                        if isl[0] == cmin[0] and isl[1] == cmin[1]:
+                        if isl.x == cmin.x and isl.y == cmin.y:
                             toErase = isl
                             break
                     if toErase != []:
                         self.n_islands.remove(toErase)
                         self.p_islands[self.playerJustMoved-1].append(toErase)
-                self.p_boats[self.playerJustMoved-1][i] = [k for k in cmin]
+                self.p_boats[self.playerJustMoved-1][i].pos = cmin
+                if joueVraiment:
+                    deplacer(self.p_boats[self.playerJustMoved-1][i].id, cmin) #oui ?
+                    coloniser(cmin)
        
         #construct boats
         for coupleIslandBoat in move:
-            for boatToConstruct in range(0, coupleIslandBoat[1]):
-                self.p_islands[self.playerJustMoved-1][coupleIslandBoat[0]][3] -= CARAVELLE_COUT
-                self.p_boats[self.playerJustMoved-1].append([self.p_islands[self.playerJustMoved-1][coupleIslandBoat[0]][i] for i in range(2)])
+            for typeBoatToConstruct in range(0, coupleIslandBoat[1]):
+                self.or_sur_ile[coupleIslandBoat[0].y][coupleIslandBoat[0].x] -= CARAVELLE_COUT
+                self.p_boats[self.playerJustMoved-1].append(bateau(id=LMAXID+1,pos=coupleIslandBoat[0],joueur=self.playerJustMoved-1],bateau_type=typeBoatToConstruct,nb_or=0,deplacable=False))
+                LMAXID +=1
+                if(joueVraiment):
+                    construire(typeBoatToConstruct, coupleIslandBoat[0])
        
     def manDist(self, p1, p2):
-        return abs(p1[0]-p2[0])+abs(p1[1]-p2[1])
+        return abs(p1.x-p2.x)+abs(p1.y-p2.y)
  
     def GetMoves(self):
         """ Get all possible moves from this state.
         """
-        global REVENU_ILE,REVENU_VOLCAN,CARAVELLE_COUT,K
+        global REVENU_ILE,REVENU_VOLCAN,CARAVELLE_COUT,K#,TERRAIN_VOLCAN
         playerToMove = 3-self.playerJustMoved-1
-        if self.k % 2 == 1:
-            for i in range(2):
-                self.score[i] = sum([x for x in map(lambda x: x[3], self.p_islands[i])])+CARAVELLE_COUT*len(self.p_boats[i])
+        #if self.k % 2 == 1:
+         #   for i in range(2):
+          #      self.score[i] = sum([x for x in map(lambda x: x[3], self.p_islands[i])])+CARAVELLE_COUT*len(self.p_boats[i])
         #giveMoney
         if self.k != 2:
             for isl in self.p_islands[playerToMove]:
-                isl[3] += REVENU_ILE + isl[2]*(REVENU_VOLCAN-REVENU_ILE)
+                self.or_sur_ile[isl.y][isl.x] += REVENU_ILE + (info_terrain(isl)==TERRAIN_VOLCAN)*(REVENU_VOLCAN-REVENU_ILE)
        
         if len(self.n_islands) != 0:
-            islandHeuristic = [(i,np.mean([self.manDist(isl,isl_n) for isl_n in self.n_islands])) for (i,isl) in filter(lambda x: x[1][2] == 0,enumerate(self.p_islands[playerToMove]))]
+            islandHeuristic = [(i,np.mean([self.manDist(isl,isl_n) for isl_n in self.n_islands])) for (i,isl) in filter(lambda x: info_terrain(x[1])!=TERRAIN_VOLCAN,enumerate(self.p_islands[playerToMove]))]
        
             islandHeuriticMean = np.mean(map(lambda x: x[1], islandHeuristic))
             islandHeuristic = map(lambda x: x[0],filter(lambda x: x[1] <= islandHeuriticMean, islandHeuristic))
-            possibleConstruction = [[(m[0],i) for i in range(0,m[1]+1)] for m in map(lambda x: (x,int(self.p_islands[playerToMove][x][3]/CARAVELLE_COUT)), islandHeuristic)]
+            possibleConstruction = [[(m[0],BATEAU_CARAVELLE) for i in range(0,m[1]+1)] for m in map(lambda x: (x,int(self.or_sur_ile[self.p_islands[playerToMove][x].y][self.p_islands[playerToMove][x].x]/CARAVELLE_COUT)), islandHeuristic)]
             islandActions = list(itertools.product(*possibleConstruction))
+            #encore un conflit ici : possibleConstruction contient une liste d'id d'iles + id de nouveau bateau sur cette ile
+            #moi je veux plutot des paires (idIle, typeBateau), peut etre que là c bon
  
             #actual_k = min(K,len(self.n_islands))
             #boatActions = list(itertools.product([i for i in range(actual_k+1)], repeat=len(self.p_boats[playerToMove])))
@@ -228,27 +240,6 @@ def UCT(rootstate, itermax, verbose = False):
     else: print rootnode.ChildrenToString()
 
     return sorted(rootnode.childNodes, key = lambda c: c.visits)[-1].move # return the move that was most visited
-                
-def UCTPlayGame():
-    """ Play a sample game between two UCT players where each player gets a different number 
-        of UCT iterations (= simulations = tree nodes).
-    """
-    # state = OthelloState(4) # uncomment to play Othello on a square board of the given size
-    # state = OXOState() # uncomment to play OXO
-    state = ProloState(15) # uncomment to play Nim with the given number of starting chips
-    while (state.GetMoves() != []):
-        print str(state)
-        if state.playerJustMoved == 1:
-            m = UCT(rootstate = state, itermax = 1000, verbose = False) # play with values for itermax and verbose = True
-        else:
-            m = UCT(rootstate = state, itermax = 100, verbose = False)
-        print "Best Move: " + str(m) + "\n"
-        state.DoMove(m)
-    if state.GetResult(state.playerJustMoved) == 1.0:
-        print "Player " + str(state.playerJustMoved) + " wins!"
-    elif state.GetResult(state.playerJustMoved) == 0.0:
-        print "Player " + str(3 - state.playerJustMoved) + " wins!"
-    else: print "Nobody wins!"
     
 tab=[]
 state=0
@@ -258,6 +249,11 @@ idAdv=0
 # Fonction appelée au début de la partie
 def partie_init():
    global tab, state, idMoi, idAdv, TAILLE_TERRAIN
+   
+   #retire la limite de la pile pour les appels rec
+   resource.setrlimit(resource.RLIMIT_STACK, (resource.RLIM_INFINITY, resource.RLIM_INFINITY))
+   #sys.setrecursionlimit(10**6)
+   
    for i in range(TAILLE_TERRAIN):
       tab.append(['~']*TAILLE_TERRAIN)
       for j in range(TAILLE_TERRAIN):
@@ -289,10 +285,13 @@ def update_state():
     state.p_islands[1]=[]
     state.p_boats[0]=[]
     state.p_boats[1]=[]
+    state.n_islands=[]
     for isl in liste_iles():
-      state.or_sur_ile[isl.y][isl.x] = info_ile_or(isl) #en gros
+      state.or_sur_ile[isl.y][isl.x] = info_ile_or(isl) #en gros, OK
       if info_ile_joueur(isl) != -1:
-        state.p_islands[info_ile_joueur(isl)==idAdv].append(isl) #en gros
+        state.p_islands[info_ile_joueur(isl)==idAdv].append(isl) #en gros, OK
+      else:
+        state.n_islands.append(isl)
     for py in range(1,TAILLE_TERRAIN+1):
       for px in range(1,TAILLE_TERRAIN+1):
         for boat in liste_bateaux_position(position(x=px, y=py)):
@@ -310,8 +309,9 @@ def jouer_tour():
     update_state() #l'autre vient de jouer, éventuellement
     if(state.GetMoves() != []):
         m = UCT(rootstate = state, itermax = 1000, verbose = False)
-        state.DoMove(m)
-        joue(m)
+        state.DoMove(m,True)
+        state.k+=1
+        #joue(m)
 
 # Fonction appelée à la fin de la partie
 def partie_fin():
