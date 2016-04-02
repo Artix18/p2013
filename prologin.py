@@ -17,15 +17,15 @@ from collections import OrderedDict
 
  
 class proloState:
-    def __init__(self, themap):
+    def __init__(self, monX, monY, advX, advY, themap):
         global OR_INITIAL
         self.k = 2
         self.playerJustMoved = 2 # At the root pretend the player just moved is p2 - p1 has the first move
         coord = []
         self.origin = [[0,0,0,0] for i in range(2)] #iLig, iCol, type, money on
         self.score = [0,0]
-        for i in range(2):
-            self.origin[i] = map(int,themap.split('\n')[i].split(' '))+[0,0]
+        self.origin[0] = [monY,monX]+[0,0]
+        self.origin[1] = [advY,advX]+[0,0]
         l_coords = []
         self.themap = copy.deepcopy(themap)
         for (i,row) in enumerate(themap):
@@ -252,10 +252,12 @@ def UCTPlayGame():
     
 tab=[]
 state=0
+idMoi=0
+idAdv=0
 
 # Fonction appelée au début de la partie
 def partie_init():
-   #global tab, state
+   global tab, state, idMoi, idAdv, TAILLE_TERRAIN
    for i in range(TAILLE_TERRAIN):
       tab.append(['~']*TAILLE_TERRAIN)
       for j in range(TAILLE_TERRAIN):
@@ -264,19 +266,52 @@ def partie_init():
             tab[i][j] = 'o'
          elif terr == TERRAIN_VOLCAN:
             tab[i][j] = '^'
-         else
+         else:
             tab[i][j] = '~'
-    state = ProloState(tab)
+    idMoi = mon_joueur()
+    idAdv = adversaire()
+    advX = 0
+    advY = 0
+    moiX = 0
+    moiY = 0
+    moiX = mes_iles()[0].x
+    moiY = mes_iles()[0].y
+    for pos in liste_iles:
+      if info_ile_joueur(pos) == idAdv:
+         advX = pos.x
+         advY = pos.y
+    state = ProloState(moiX, moiY, advX, advY, tab)
 
 def update_state():
-    pass
+    global state,idAdv,TAILLE_TERRAIN
+    state.playerJustMoved=2
+    state.p_islands[0]=[]
+    state.p_islands[1]=[]
+    state.p_boats[0]=[]
+    state.p_boats[1]=[]
+    for isl in liste_iles():
+      state.or_sur_ile[isl.y][isl.x] = info_ile_or(isl) #en gros
+      if info_ile_joueur(isl) != -1:
+        state.p_islands[info_ile_joueur(isl)==idAdv].append(isl) #en gros
+    for py in range(1,TAILLE_TERRAIN+1):
+      for px in range(1,TAILLE_TERRAIN+1):
+        for boat in liste_bateaux_position(position(x=px, y=py)):
+            state.p_boats[idAdv == boat.joueur].append(boat) #en gros
+    state.score[0] = score(mon_joueur())
+    state.score[1] = score(adversaire())
+
+def joue(move):
+    global state
+    pass #todo : recopier DoMove en mettant les appels de fonctions prolo ici
 
 # Fonction appelée à chaque tour
 def jouer_tour():
+    global state
     update_state() #l'autre vient de jouer, éventuellement
     if(state.GetMoves() != []):
         m = UCT(rootstate = state, itermax = 1000, verbose = False)
         state.DoMove(m)
+        joue(m)
 
 # Fonction appelée à la fin de la partie
 def partie_fin():
