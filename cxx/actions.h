@@ -68,7 +68,7 @@ class action_transfer_island : public action
 		int id;
 		int money;//algebraic transfer
 
-		string name() { return "Transfer island"; };
+		string name() { return "Transfer " + to_string(money) + " to island"; };
 };
 
 class action_transfer_boat : public action
@@ -78,7 +78,7 @@ class action_transfer_boat : public action
 		void applyTo(state* s);
 
 		int idFrom, idTo, money;
-		string name() { return "Transfer boat"; };
+		string name() { return "Transfer "+ to_string(money) +" from boat "+ to_string(idFrom)+" to boat "+to_string(idTo); };
 };
 
 #endif

@@ -8,6 +8,7 @@
 #include "state.h"
 #include "genome.h"
 #include <unistd.h>
+#include <algorithm>
 ///
 // Fonction appelée au début de la partie
 //
@@ -18,9 +19,17 @@ void partie_init()
 
 }
 
+#define POP_SIZE 500
+
 ///
 // Fonction appelée à chaque tour
 //
+
+bool compare(const unique_ptr<genome>& a, const unique_ptr<genome>& b)
+{
+	return a->fit > b->fit;
+}
+
 void jouer_tour()
 {
 	srand(time(NULL));
@@ -48,34 +57,21 @@ void jouer_tour()
 		}
 
 	bool player = 2-adversaire();
-	//printf("G %d\n", get<1>(island[1][position({1,1})]));
-	state curr_state(player,island,boat,max_idBoat);
-	genome g;
-	//printf("F %d\n", get<1>(curr_state.island[1][position{1,1}]));
-	g.random(curr_state);
 
-	/*float dmoymoy = 1000*1000*1000;
-	bool a = false;
-	for(auto b: boat[0])
+	state curr_state(player,island,boat,id_dernier_bateau_construit());
+	
+	vector<unique_ptr<genome>> pop;
+	for(int iGuy = 0 ; iGuy < POP_SIZE ; iGuy++)
 	{
-		if(!a)
-		{
-			a = true;
-			dmoymoy = 0;
-		}
-		float dmoy = 0;
-		for(auto i : island[0])
-			dmoy += (float)distance(b.second.pos,i.first);
-		dmoy /= island[0].size();
-		dmoymoy += dmoy;
+		genome *g = new genome();
+		g->randomGuy(curr_state);
+		pop.push_back(unique_ptr<genome>(g));
 	}
 
-	dmoymoy /= boat[0].size();
-
-	printf("%f\n", boat[0].size()*CARAVELLE_COUT+(1/dmoymoy) * (island[0].size()+island[2].size())/island[1].size());
-
-	exit(1);*/
-	
+	sort(pop.begin(), pop.end(), compare);
+	printf("I should do : \n");
+	for(unique_ptr<action>& a : pop[0]->genes)
+		printf("%s\n", a->name().c_str());
 }
 
 ///

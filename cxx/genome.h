@@ -15,9 +15,11 @@ class genome
 	public:
 		genome() {}
 
-		void random(state s);
+		void randomGuy(state s);
 
-		vector<shared_ptr<action>> genes;
+		vector<unique_ptr<action>> genes;
+
+		float fit;
 };
 
 #endif

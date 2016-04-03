@@ -4,6 +4,10 @@
 void action_endTurn::applyTo(state* s)
 {
 	s->player = !s->player;
+	/* Handle combat */
+
+	/*Handle Combat*/
+	//NOT YET
 }
 
 void action_build::applyTo(state* s)
@@ -27,12 +31,14 @@ void action_move::applyTo(state* s)
 
 void action_transfer_island::applyTo(state* s)
 {
+	s->flag_transfer_island[s->player][id] = true;
 	s->boat[s->player][id].nb_or += money;
 	s->island[s->player+1][s->boat[s->player][id].pos] += -money;
 }
 
 void action_transfer_boat::applyTo(state* s)
 {
+	s->flag_transfer_boat[s->player][make_pair(idFrom,idTo)] = true;
 	s->boat[s->player][idFrom].nb_or -= money;
 	s->boat[s->player][idTo].nb_or += money;	
 }
