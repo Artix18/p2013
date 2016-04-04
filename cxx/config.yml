@@ -4,6 +4,7 @@ verbose: 0
 clients:
   - ./champion.so
   - ./champion.so
+#  - /home/cosmo/Documents/prologin/stechec2/games/prologin2013/player_env/caml/island_quest-master/final/champion.so
 names:
   - Blue ones
   - Red ones

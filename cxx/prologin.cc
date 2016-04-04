@@ -9,6 +9,9 @@
 #include "genome.h"
 #include <unistd.h>
 #include <algorithm>
+#include <signal.h>
+#include <string.h>
+#include <sys/time.h>
 ///
 // Fonction appelée au début de la partie
 //
@@ -23,8 +26,6 @@ void partie_init()
   printf("Seed : %ld\n", seed);
 
 }
-
-#define POP_SIZE 10
 
 ///
 // Fonction appelée à chaque tour
@@ -62,9 +63,10 @@ void action_to_Action(unique_ptr<action> a)
 		}
 }
 
+
 void jouer_tour()
 {
-	
+	static int POP_SIZE = 500;
 	map<pair<int,int>,int> island[3];
 	map<pair<int,int>,bool> not_volcano;
 	map<int,bateau> boat[2];
@@ -95,19 +97,30 @@ void jouer_tour()
 
 	state curr_state(player,island,boat,not_volcano,id_dernier_bateau_construit());
 	vector<unique_ptr<genome>> pop;
+	struct timeval stop, start, result;
 	for(int iGuy = 0 ; iGuy < POP_SIZE ; iGuy++)
 	{
+		gettimeofday(&start, NULL);
 		genome *g = new genome();
 		g->randomGuy(curr_state);
 		pop.push_back(unique_ptr<genome>(g));
-	}
+		gettimeofday(&stop, NULL);
+		timersub(&stop, &start, &result);
+		if((long int)result.tv_usec >= (1e6/float(POP_SIZE)))
+		{
+			printf("Down grade POP_SIZE\n");
+			POP_SIZE /= 2;
+			break;
+		}
 
+	}
 	sort(pop.begin(), pop.end(), compare);
 
 	/*for(unique_ptr<genome>& a : pop)
 		printf("%f\n", a->fit);*/
 
-	printf("\nI should do : \n");
+	printf("POP_SIZE: %d\n", POP_SIZE);
+	printf("I should do : \n");
 	for(unique_ptr<action>& a : pop[0]->genes)
 		printf("%s\n", a->name().c_str());
 	printf("\n");

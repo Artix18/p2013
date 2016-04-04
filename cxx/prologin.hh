@@ -261,6 +261,7 @@ static inline int id_dernier_bateau_construit()
 //
 namespace d
 {
+
 extern "C" int api_distance(position depart, position arrivee);
 static inline int distance(position depart, position arrivee)
 {
