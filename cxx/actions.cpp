@@ -1,0 +1,44 @@
+#include "actions.h"
+#include "state.h"
+
+void action_endTurn::applyTo(state* s)
+{
+	s->player = !s->player;
+	/* Handle combat */
+
+	/*Handle Combat*/
+	//NOT YET
+}
+
+void action_build::applyTo(state* s)
+{
+	s->boat[s->player][s->max_idBoat+1] = bateau{s->max_idBoat+1,where,s->player,(bateau_type)what,0,false};
+	s->max_idBoat++;
+	s->island[s->player+1][pair_from_pos(where)] -= (what) ? GALION_COUT : CARAVELLE_COUT;
+}
+
+void action_colonize::applyTo(state* s)
+{
+	s->island[s->player+1][pair_from_pos(where)] = s->island[0][pair_from_pos(where)];
+	s->island[0].erase(pair_from_pos(where));
+}
+
+void action_move::applyTo(state* s)
+{
+	s->boat[s->player][id].pos = whereTo;
+	s->boat[s->player][id].deplacable = false;
+}
+
+void action_transfer_island::applyTo(state* s)
+{
+	s->flag_transfer_island[s->player][id] = true;
+	s->boat[s->player][id].nb_or += money;
+	s->island[s->player+1][pair_from_pos(s->boat[s->player][id].pos)] += -money;
+}
+
+void action_transfer_boat::applyTo(state* s)
+{
+	s->flag_transfer_boat[s->player][make_pair(idFrom,idTo)] = true;
+	s->boat[s->player][idFrom].nb_or -= money;
+	s->boat[s->player][idTo].nb_or += money;	
+}
