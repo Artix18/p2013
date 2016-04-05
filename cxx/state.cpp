@@ -127,20 +127,26 @@ void state::possibleActions(vector<unique_ptr<action>>& p)
 	}
 }
 
-float state::getScore()
+float state::getScore(bool reverse /* = false */)
 {
+	bool my_player = player;
+	if(reverse)
+		my_player = 1-player;
+
 	float s=0;
-	for(auto t: island[player+1])
+	for(auto t: island[my_player+1])
 		s += t.second;
-	int nbCar = 0;
-	for(auto b: boat[player])
+	int nbCar = 0, nbGal = 0;
+	for(auto b: boat[my_player])
 	{
 		if(b.second.btype == BATEAU_CARAVELLE)
 			nbCar++;
+		if(b.second.btype == BATEAU_GALION)
+			nbGal++;
 		s += ((b.second.btype == BATEAU_CARAVELLE) ? CARAVELLE_COUT : GALION_COUT) + b.second.nb_or;
 	}
 
-	s += 10*island[player+1].size() + (float(island[0].size())/float(island[0].size()+island[1].size()+island[2].size()))*nbCar;
+	s += 10*island[my_player+1].size() + (float(island[0].size())/float(island[0].size()+island[1].size()+island[2].size()))*nbCar + (float(island[1-my_player].size())/float(island[0].size()+island[1].size()+island[2].size()))*nbGal;
 	//Moyenne des distances moyennes des caravelles aux iles vierges
 	/*float dmoymoy = 0.0;
 	int nbCar = 0;

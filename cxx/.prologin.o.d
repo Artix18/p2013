@@ -109,8 +109,10 @@ prologin.o: prologin.cc /usr/include/stdc-predef.h prologin.hh \
  /usr/include/c++/5/bits/allocated_ptr.h \
  /usr/include/c++/5/bits/shared_ptr_atomic.h \
  /usr/include/c++/5/bits/atomic_base.h \
- /usr/include/c++/5/backward/auto_ptr.h actions.h genome.h \
- /usr/include/unistd.h /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
+ /usr/include/c++/5/backward/auto_ptr.h actions.h /usr/include/c++/5/set \
+ /usr/include/c++/5/bits/stl_set.h /usr/include/c++/5/bits/stl_multiset.h \
+ genome.h /usr/include/unistd.h \
+ /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
  /usr/include/x86_64-linux-gnu/bits/environments.h \
  /usr/include/x86_64-linux-gnu/bits/confname.h /usr/include/getopt.h \
  /usr/include/x86_64-linux-gnu/bits/unistd.h /usr/include/c++/5/algorithm \
@@ -501,6 +503,12 @@ state.h:
 /usr/include/c++/5/backward/auto_ptr.h:
 
 actions.h:
+
+/usr/include/c++/5/set:
+
+/usr/include/c++/5/bits/stl_set.h:
+
+/usr/include/c++/5/bits/stl_multiset.h:
 
 genome.h:
 

@@ -64,9 +64,18 @@ void action_to_Action(unique_ptr<action> a)
 }
 
 
+int bon_code(int c)
+{
+	if(c > 2)
+		return 2;
+	return c;
+}
+
 void jouer_tour()
 {
 	static int POP_SIZE = 500;
+	static float eliteRate = 1.0/2;
+
 	map<pair<int,int>,int> island[3];
 	map<pair<int,int>,bool> not_volcano;
 	map<int,bateau> boat[2];
@@ -78,23 +87,26 @@ void jouer_tour()
 			not_volcano[make_pair(x,y)] = true;
 			if(t != TERRAIN_ERREUR && t != TERRAIN_MER)
 			{
-				//printf("OO\n");
-				int owner = info_ile_joueur(position{x,y});
+				int owner = bon_code(info_ile_joueur(position{x,y}));
 				owner = (owner == -1) ? 0 : owner;
 				island[owner][pair_from_pos(position{x,y})] = info_ile_or({x,y});
 				not_volcano[make_pair(x,y)] = (t == TERRAIN_ILE);
 			}
-
+			
 			for(auto b : liste_bateaux_position(position{x,y}))
-				boat[b.joueur-1][b.id] = b;
+			{
+				bateau bonBat = b;
+				bonBat.joueur = bon_code(b.joueur);
+				boat[bonBat.joueur-1][bonBat.id] = bonBat;
+			}
 
 		}
 
 
-	bool player = mon_joueur()-1;
+	bool player = bon_code(mon_joueur())-1;
 
-	//printf("\nTurn of %d\n", player);
-
+	printf("\nTurn of %d\n", player);
+	
 	state curr_state(player,island,boat,not_volcano,id_dernier_bateau_construit());
 	vector<unique_ptr<genome>> pop;
 	struct timeval stop, start, result;
@@ -106,9 +118,10 @@ void jouer_tour()
 		pop.push_back(unique_ptr<genome>(g));
 		gettimeofday(&stop, NULL);
 		timersub(&stop, &start, &result);
-		if((long int)result.tv_usec >= (1e6/float(POP_SIZE)))
+		if((long int)result.tv_usec >= (1e6/float(POP_SIZE))/3 && POP_SIZE >= 2)
 		{
 			printf("Down grade POP_SIZE\n");
+
 			POP_SIZE /= 2;
 			break;
 		}
@@ -116,15 +129,33 @@ void jouer_tour()
 	}
 	sort(pop.begin(), pop.end(), compare);
 
-	/*for(unique_ptr<genome>& a : pop)
-		printf("%f\n", a->fit);*/
+	int toKill = pop.size()*eliteRate; 
+	for(int i = 0 ; i < toKill ; i++)
+		pop.pop_back();
 
+
+	for(int i = 0 ; i < toKill ; i++)
+	{
+		int a = rand()%pop.size();
+		int b = rand()%pop.size();
+		while(a == b)
+			b = rand()%pop.size();
+
+		genome *g = new genome();
+		g->cross_over(pop[a].get(), pop[b].get(), curr_state);
+		pop.push_back(unique_ptr<genome>(g));
+
+
+	}
+
+
+	
 	printf("POP_SIZE: %d\n", POP_SIZE);
-	printf("I should do : \n");
-	for(unique_ptr<action>& a : pop[0]->genes)
+	printf("I should do : %d\n", pop[0]->genes.size());
+	for(const unique_ptr<action>& a : pop[0]->genes)
 		printf("%s\n", a->name().c_str());
 	printf("\n");
-
+	
 	//Last give up owner ship
 	for(int iAction = 0 ; iAction < pop[0]->genes.size() ; iAction++)
 		action_to_Action(move(pop[0]->genes[iAction]));

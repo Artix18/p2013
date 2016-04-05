@@ -109,7 +109,9 @@ state.o: state.cpp /usr/include/stdc-predef.h state.h \
  /usr/include/c++/5/bits/allocated_ptr.h \
  /usr/include/c++/5/bits/shared_ptr_atomic.h \
  /usr/include/c++/5/bits/atomic_base.h \
- /usr/include/c++/5/backward/auto_ptr.h prologin.hh actions.h
+ /usr/include/c++/5/backward/auto_ptr.h prologin.hh actions.h \
+ /usr/include/c++/5/set /usr/include/c++/5/bits/stl_set.h \
+ /usr/include/c++/5/bits/stl_multiset.h
 
 /usr/include/stdc-predef.h:
 
@@ -420,3 +422,9 @@ state.h:
 prologin.hh:
 
 actions.h:
+
+/usr/include/c++/5/set:
+
+/usr/include/c++/5/bits/stl_set.h:
+
+/usr/include/c++/5/bits/stl_multiset.h:

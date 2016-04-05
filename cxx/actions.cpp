@@ -3,11 +3,99 @@
 
 void action_endTurn::applyTo(state* s)
 {
-	s->player = !s->player;
 	/* Handle combat */
+	set<pair<int,int>> vu;
+	for(auto b: s->boat[s->player])
+		if(vu.find(pair_from_pos(b.second.pos)) == vu.end())
+		{
+			bool enMer = (info_terrain(b.second.pos) == TERRAIN_MER); 
+			vu.insert(pair_from_pos(b.second.pos));
+			int nbGalMoi = 0, nbGalLui = 0;
+			for(auto b2 : s->boat[s->player])
+				if(b2.second.btype == BATEAU_GALION && b2.second.pos == b.second.pos)
+					nbGalMoi++;
+			for(auto b2 : s->boat[1-s->player])
+				if(b2.second.btype == BATEAU_GALION && b2.second.pos == b.second.pos)
+					nbGalLui++;
 
-	/*Handle Combat*/
-	//NOT YET
+			if(nbGalLui == 0)
+				continue;
+
+			if(nbGalMoi > nbGalLui || (nbGalMoi == nbGalLui && enMer))
+			{
+				vector<int> toEraseMoi;
+				for(auto b2 : s->boat[s->player])
+					if(b2.second.btype == BATEAU_GALION && b2.second.pos == b.second.pos)
+					{
+						toEraseMoi.push_back(b2.first);
+						if(toEraseMoi.size() > nbGalLui)
+							break;
+					}
+				for(int i : toEraseMoi)
+					s->boat[s->player].erase(i);
+
+				vector<int> toEraseLui;
+				int money = 0;
+				for(auto b2 : s->boat[1-s->player])
+					if(b2.second.pos == b.second.pos)
+					{
+						toEraseLui.push_back(b2.first);
+						if(b2.second.btype == BATEAU_CARAVELLE)
+							money += b2.second.nb_or;
+					}
+				if(money != 0)
+				{
+					int minId = b.first;
+					for(auto b2 : s->boat[s->player])
+						if(b2.second.pos == b.second.pos && b2.second.btype == BATEAU_CARAVELLE)
+							minId = min(minId, b2.first);
+
+					s->boat[s->player][minId].nb_or += money;
+				}
+
+				for(int i : toEraseLui)
+					s->boat[1-s->player].erase(i);
+
+				if(!enMer && s->island[1-s->player+1].find(pair_from_pos(b.second.pos)) != s->island[1-s->player+1].end())
+				{
+					s->island[s->player+1][pair_from_pos(b.second.pos)] = s->island[1-s->player+1][pair_from_pos(b.second.pos)];
+					s->island[1-s->player+1].erase(pair_from_pos(b.second.pos));
+				}
+			}
+			else if(nbGalLui > nbGalMoi || (nbGalMoi == nbGalLui && !enMer))
+			{
+				vector<int> toEraseLui;
+				for(auto b2 : s->boat[1-s->player])
+					if(b2.second.btype == BATEAU_GALION && b2.second.pos == b.second.pos)
+					{
+						toEraseLui.push_back(b2.first);
+						if(toEraseLui.size() > nbGalMoi)
+							break;
+					}
+				for(int i : toEraseLui)
+					s->boat[1-s->player].erase(i);
+
+				vector<int> toEraseMoi;
+				for(auto b2 : s->boat[s->player])
+					if(b2.second.pos == b.second.pos)
+						toEraseMoi.push_back(b2.first);
+
+				for(int i : toEraseMoi)
+					s->boat[s->player].erase(i);
+
+				if(!enMer && s->island[s->player+1].find(pair_from_pos(b.second.pos)) != s->island[s->player+1].end())
+				{
+					s->island[1-s->player+1][pair_from_pos(b.second.pos)] = s->island[s->player+1][pair_from_pos(b.second.pos)];
+					s->island[s->player+1].erase(pair_from_pos(b.second.pos));
+				}
+
+			}
+		}
+
+
+	s->player = !s->player;
+	
+	
 }
 
 void action_build::applyTo(state* s)

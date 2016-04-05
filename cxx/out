@@ -1,0 +1,8 @@
+>>> Starting server[P=0]:
+    /usr/bin/stechec2-server --rep_addr ipc:///tmp/stechec2-x3ud5dd_/reqrep --pub_addr ipc:///tmp/stechec2-x3ud5dd_/pubsub --rules libprologin2013.so --verbose 0 --map /home/cosmo/Documents/prologin/stechec2/games/prologin2013/player_env/cxx/map1.map --nb_clients 3
+>>> Starting Blue ones[P=1]:
+    /usr/bin/stechec2-client --req_addr ipc:///tmp/stechec2-x3ud5dd_/reqrep --sub_addr ipc:///tmp/stechec2-x3ud5dd_/pubsub --rules libprologin2013.so --verbose 0 --map /home/cosmo/Documents/prologin/stechec2/games/prologin2013/player_env/cxx/map1.map --champion /home/cosmo/Documents/prologin/stechec2/games/prologin2013/player_env/cxx/champion.so --name Blue ones
+>>> Starting Red ones[P=2]:
+    /usr/bin/stechec2-client --req_addr ipc:///tmp/stechec2-x3ud5dd_/reqrep --sub_addr ipc:///tmp/stechec2-x3ud5dd_/pubsub --rules libprologin2013.so --verbose 0 --map /home/cosmo/Documents/prologin/stechec2/games/prologin2013/player_env/cxx/map1.map --champion /home/cosmo/Documents/prologin/stechec2/games/prologin2013/player_env/cxx/champion.so --name Red ones
+>>> Starting spectator-1[P=3]:
+    /usr/bin/stechec2-client --req_addr ipc:///tmp/stechec2-x3ud5dd_/reqrep --sub_addr ipc:///tmp/stechec2-x3ud5dd_/pubsub --rules libprologin2013.so --verbose 0 --map /home/cosmo/Documents/prologin/stechec2/games/prologin2013/player_env/cxx/map1.map --champion /home/cosmo/Documents/prologin/stechec2/games/prologin2013/gui/champion.so --name spectator-1 --spectator

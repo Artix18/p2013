@@ -16,8 +16,12 @@ class genome
 		genome() {}
 
 		void randomGuy(state s);
+		void cross_over(genome* a, genome* b, state s);
+		bool hasAction(genome* a, const vector<unique_ptr<action>>& v, int index);
 
 		vector<unique_ptr<action>> genes;
+
+
 
 		float fit;
 };

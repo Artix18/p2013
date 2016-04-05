@@ -2,6 +2,8 @@
 #define DEF_ACTIONS_H
 
 #include <string>
+#include <memory>
+#include <set>
 #include "prologin.hh"
 
 using namespace std;
@@ -27,6 +29,10 @@ class action
 		virtual string name() { return ""; };
 
 		action_t actionType;
+
+		virtual
+		std::unique_ptr<action>
+        clone() const = 0;
 };
 
 class action_endTurn : public action
@@ -35,6 +41,13 @@ class action_endTurn : public action
 		action_endTurn() { actionType = ACTION_END_TURN; }
 		void applyTo(state* s);
 		string name() { return "End Of Turn"; };
+
+		virtual
+		unique_ptr<action>
+        clone() const override
+        {
+            return unique_ptr<action>(new action_endTurn(*this));
+        }
 };
 
 class action_build : public action
@@ -48,6 +61,13 @@ class action_build : public action
 		position where;
 		bool what;//0 car, 1 gal
 		string name() { return string("Build ")+((what) ? string("gallion") : string("caravelle")) + " on ("+to_string(where.x)+","+to_string(where.y)+")"; };
+
+		virtual
+		unique_ptr<action>
+        clone() const override
+        {
+            return unique_ptr<action>(new action_build(*this));
+        }
 };
 
 class action_colonize : public action
@@ -59,6 +79,13 @@ class action_colonize : public action
 		position where;
 
 		string name() { return "Colonize ("+to_string(where.x)+","+to_string(where.y)+")"; };
+
+		virtual
+		unique_ptr<action>
+        clone() const override
+        {
+            return unique_ptr<action>(new action_colonize(*this));
+        }
 };
 
 class action_move : public action
@@ -71,6 +98,13 @@ class action_move : public action
 		position whereTo;
 
 		string name() { return "Move "+to_string(id)+" to ("+to_string(whereTo.x)+","+to_string(whereTo.y)+")"; };
+
+		virtual
+		unique_ptr<action>
+        clone() const override
+        {
+            return unique_ptr<action>(new action_move(*this));
+        }
 };
 
 class action_transfer_island : public action
@@ -82,7 +116,14 @@ class action_transfer_island : public action
 		int id;
 		int money;//algebraic transfer
 
-		string name() { return "Transfer " + to_string(money) + " to island"; };
+		string name() { return "Transfer from " + to_string(id) + ", " + to_string(money) + "$ to island"; };
+
+		virtual
+		unique_ptr<action>
+        clone() const override
+        {
+            return unique_ptr<action>(new action_transfer_island(*this));
+        }
 };
 
 class action_transfer_boat : public action
@@ -93,6 +134,13 @@ class action_transfer_boat : public action
 
 		int idFrom, idTo, money;
 		string name() { return "Transfer "+ to_string(money) +" from boat "+ to_string(idFrom)+" to boat "+to_string(idTo); };
+
+		virtual
+		unique_ptr<action>
+        clone() const override
+        {
+            return unique_ptr<action>(new action_transfer_boat(*this));
+        }
 };
 
 #endif

@@ -32,7 +32,7 @@ class state
 
 		int max_idBoat;
 
-		float getScore();
+		float getScore(bool reverse = false);//reverse, score of other player, useful for endTurn that changes player but we want last's one score
 };
 
 #endif

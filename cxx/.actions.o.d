@@ -87,30 +87,32 @@ actions.o: actions.cpp /usr/include/stdc-predef.h actions.h \
  /usr/include/asm-generic/errno.h /usr/include/asm-generic/errno-base.h \
  /usr/include/c++/5/bits/functional_hash.h \
  /usr/include/c++/5/bits/hash_bytes.h \
- /usr/include/c++/5/bits/basic_string.tcc prologin.hh \
- /usr/include/c++/5/vector /usr/include/c++/5/bits/stl_construct.h \
+ /usr/include/c++/5/bits/basic_string.tcc /usr/include/c++/5/memory \
+ /usr/include/c++/5/bits/stl_construct.h \
  /usr/include/c++/5/bits/stl_uninitialized.h \
- /usr/include/c++/5/bits/stl_vector.h \
- /usr/include/c++/5/bits/stl_bvector.h /usr/include/c++/5/bits/vector.tcc \
- state.h /usr/include/c++/5/tuple /usr/include/c++/5/utility \
- /usr/include/c++/5/bits/stl_relops.h /usr/include/c++/5/array \
- /usr/include/c++/5/stdexcept /usr/include/c++/5/bits/uses_allocator.h \
- /usr/include/c++/5/queue /usr/include/c++/5/deque \
- /usr/include/c++/5/bits/stl_deque.h /usr/include/c++/5/bits/deque.tcc \
- /usr/include/c++/5/bits/stl_heap.h /usr/include/c++/5/bits/stl_queue.h \
- /usr/include/c++/5/map /usr/include/c++/5/bits/stl_tree.h \
- /usr/include/c++/5/ext/aligned_buffer.h \
- /usr/include/c++/5/bits/stl_map.h /usr/include/c++/5/bits/stl_multimap.h \
- /usr/include/c++/5/memory /usr/include/c++/5/bits/stl_tempbuf.h \
+ /usr/include/c++/5/bits/stl_tempbuf.h \
  /usr/include/c++/5/bits/stl_raw_storage_iter.h \
  /usr/include/c++/5/typeinfo /usr/include/c++/5/ext/concurrence.h \
- /usr/include/c++/5/functional /usr/include/c++/5/bits/unique_ptr.h \
+ /usr/include/c++/5/bits/uses_allocator.h /usr/include/c++/5/functional \
+ /usr/include/c++/5/tuple /usr/include/c++/5/utility \
+ /usr/include/c++/5/bits/stl_relops.h /usr/include/c++/5/array \
+ /usr/include/c++/5/stdexcept /usr/include/c++/5/bits/unique_ptr.h \
  /usr/include/c++/5/bits/shared_ptr.h \
  /usr/include/c++/5/bits/shared_ptr_base.h \
  /usr/include/c++/5/bits/allocated_ptr.h \
+ /usr/include/c++/5/ext/aligned_buffer.h \
  /usr/include/c++/5/bits/shared_ptr_atomic.h \
  /usr/include/c++/5/bits/atomic_base.h \
- /usr/include/c++/5/backward/auto_ptr.h
+ /usr/include/c++/5/backward/auto_ptr.h /usr/include/c++/5/set \
+ /usr/include/c++/5/bits/stl_tree.h /usr/include/c++/5/bits/stl_set.h \
+ /usr/include/c++/5/bits/stl_multiset.h prologin.hh \
+ /usr/include/c++/5/vector /usr/include/c++/5/bits/stl_vector.h \
+ /usr/include/c++/5/bits/stl_bvector.h /usr/include/c++/5/bits/vector.tcc \
+ state.h /usr/include/c++/5/queue /usr/include/c++/5/deque \
+ /usr/include/c++/5/bits/stl_deque.h /usr/include/c++/5/bits/deque.tcc \
+ /usr/include/c++/5/bits/stl_heap.h /usr/include/c++/5/bits/stl_queue.h \
+ /usr/include/c++/5/map /usr/include/c++/5/bits/stl_map.h \
+ /usr/include/c++/5/bits/stl_multimap.h
 
 /usr/include/stdc-predef.h:
 
@@ -346,21 +348,23 @@ actions.h:
 
 /usr/include/c++/5/bits/basic_string.tcc:
 
-prologin.hh:
-
-/usr/include/c++/5/vector:
+/usr/include/c++/5/memory:
 
 /usr/include/c++/5/bits/stl_construct.h:
 
 /usr/include/c++/5/bits/stl_uninitialized.h:
 
-/usr/include/c++/5/bits/stl_vector.h:
+/usr/include/c++/5/bits/stl_tempbuf.h:
 
-/usr/include/c++/5/bits/stl_bvector.h:
+/usr/include/c++/5/bits/stl_raw_storage_iter.h:
 
-/usr/include/c++/5/bits/vector.tcc:
+/usr/include/c++/5/typeinfo:
 
-state.h:
+/usr/include/c++/5/ext/concurrence.h:
+
+/usr/include/c++/5/bits/uses_allocator.h:
+
+/usr/include/c++/5/functional:
 
 /usr/include/c++/5/tuple:
 
@@ -372,7 +376,41 @@ state.h:
 
 /usr/include/c++/5/stdexcept:
 
-/usr/include/c++/5/bits/uses_allocator.h:
+/usr/include/c++/5/bits/unique_ptr.h:
+
+/usr/include/c++/5/bits/shared_ptr.h:
+
+/usr/include/c++/5/bits/shared_ptr_base.h:
+
+/usr/include/c++/5/bits/allocated_ptr.h:
+
+/usr/include/c++/5/ext/aligned_buffer.h:
+
+/usr/include/c++/5/bits/shared_ptr_atomic.h:
+
+/usr/include/c++/5/bits/atomic_base.h:
+
+/usr/include/c++/5/backward/auto_ptr.h:
+
+/usr/include/c++/5/set:
+
+/usr/include/c++/5/bits/stl_tree.h:
+
+/usr/include/c++/5/bits/stl_set.h:
+
+/usr/include/c++/5/bits/stl_multiset.h:
+
+prologin.hh:
+
+/usr/include/c++/5/vector:
+
+/usr/include/c++/5/bits/stl_vector.h:
+
+/usr/include/c++/5/bits/stl_bvector.h:
+
+/usr/include/c++/5/bits/vector.tcc:
+
+state.h:
 
 /usr/include/c++/5/queue:
 
@@ -388,36 +426,6 @@ state.h:
 
 /usr/include/c++/5/map:
 
-/usr/include/c++/5/bits/stl_tree.h:
-
-/usr/include/c++/5/ext/aligned_buffer.h:
-
 /usr/include/c++/5/bits/stl_map.h:
 
 /usr/include/c++/5/bits/stl_multimap.h:
-
-/usr/include/c++/5/memory:
-
-/usr/include/c++/5/bits/stl_tempbuf.h:
-
-/usr/include/c++/5/bits/stl_raw_storage_iter.h:
-
-/usr/include/c++/5/typeinfo:
-
-/usr/include/c++/5/ext/concurrence.h:
-
-/usr/include/c++/5/functional:
-
-/usr/include/c++/5/bits/unique_ptr.h:
-
-/usr/include/c++/5/bits/shared_ptr.h:
-
-/usr/include/c++/5/bits/shared_ptr_base.h:
-
-/usr/include/c++/5/bits/allocated_ptr.h:
-
-/usr/include/c++/5/bits/shared_ptr_atomic.h:
-
-/usr/include/c++/5/bits/atomic_base.h:
-
-/usr/include/c++/5/backward/auto_ptr.h:
