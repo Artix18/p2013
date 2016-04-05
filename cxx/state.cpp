@@ -147,6 +147,19 @@ float state::getScore(bool reverse /* = false */)
 	}
 
 	s += 10*island[my_player+1].size() + (float(island[0].size())/float(island[0].size()+island[1].size()+island[2].size()))*nbCar + (float(island[1-my_player].size())/float(island[0].size()+island[1].size()+island[2].size()))*nbGal;
+	/*int nbConglomerats = 0;
+	set<pair<int,int>> vu;
+	for(auto b: boat[my_player])
+		if(b.second.btype == BATEAU_GALION)
+			if(vu.find(pair_from_pos(b.second.pos)) == vu.end())
+			{
+				vu.insert(pair_from_pos(b.second.pos));
+				nbConglomerats++;
+			}
+
+	s += 0.1*((TAILLE_TERRAIN*TAILLE_TERRAIN)-nbConglomerats);*/
+
+
 	//Moyenne des distances moyennes des caravelles aux iles vierges
 	/*float dmoymoy = 0.0;
 	int nbCar = 0;

@@ -73,6 +73,21 @@ void genome::cross_over(genome* a, genome* b, state s)
 	//printf("\n");
 }
 
+void genome::mutate(state s) 
+{
+	if(genes.empty())
+		return;
+	
+	int mutIdx = rand()%genes.size();
+	vector<unique_ptr<action>> possible;
+	int i = 0;
+	for (int i = 0 ; i < mutIdx ; i++) 
+		genes[i]->applyTo(&s);
+	for(int j = genes.size()-1 ; j >= mutIdx ; j--)
+		genes.pop_back();
+	randomGuy(s);
+}
+
 bool genome::hasAction(genome* a, const vector<unique_ptr<action>>& v, int index)
 {
 	if (a->genes.size() <= index)

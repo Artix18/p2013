@@ -75,6 +75,7 @@ void jouer_tour()
 {
 	static int POP_SIZE = 500;
 	static float eliteRate = 1.0/2;
+	static float mutRate = 0.1;
 
 	map<pair<int,int>,int> island[3];
 	map<pair<int,int>,bool> not_volcano;
@@ -143,9 +144,20 @@ void jouer_tour()
 
 		genome *g = new genome();
 		g->cross_over(pop[a].get(), pop[b].get(), curr_state);
+
+		double prob = (double)rand() / (double)RAND_MAX;
+		if(prob < mutRate)
+		{
+			/*printf("Mutate\n");
+			for(auto& ac : g->genes)
+				printf("\t%s\n", ac->name().c_str());*/
+			g->mutate(curr_state);
+			/*printf("\n");
+			for(auto& ac : g->genes)
+				printf("\t%s\n", ac->name().c_str());*/
+		}
+		
 		pop.push_back(unique_ptr<genome>(g));
-
-
 	}
 
 
